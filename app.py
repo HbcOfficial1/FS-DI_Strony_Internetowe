@@ -1,6 +1,6 @@
 from flask import Flask, url_for, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, UserMixin
 import datetime
 from markupsafe import escape
 import os
@@ -8,12 +8,13 @@ import os
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users_data.db'
+app.secret_key['SECRET_KEY'] = 'projektstronyinternetowe'
 db = SQLAlchemy(app)
 
 #login_manager = LoginManager()
 #login_manager.init_app(app)
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(20), nullable=False)
