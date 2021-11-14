@@ -129,5 +129,11 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route('/mnistVAE')
+@login_required
+def mnist_vae():
+    return render_template('mnist_vae.html')
+
+
 if __name__ == 'main':
     app.run(debug=True)
