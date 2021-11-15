@@ -6,8 +6,22 @@
 </head>
 <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <img src="http://vignette1.wikia.nocookie.net/seraphina/images/b/b2/Dragonseraphina.jpg/revision/latest?cb=20160103194957" height="200" width="200" alt="dragon">
+    <script>
+    $(document).ready(function() {
+    $("img").on("click", function(event) {
+        var x = event.pageX - this.offsetLeft;
+        var y = event.pageY - this.offsetTop;
+        window.location.replace("{{ url_for('mnist_vae') }}" +  "?x=" + String(x) + "&y=" + String(y));
+        });
+    });
+    </script>
+
+    <img src="static/imgs/vae.png" height="800" width="800" alt="VAE" ismap>
     <br/>
-    <a href="{{ urlfor('dashboard') }}">quit</a>
+    {% if vae_img != 'None' %}
+    <img src="data:image/png;base64,{{ vae_img }}" height="80" width="80">
+    {% endif %}
+    <br/>
+    <a href="{{ url_for('dashboard') }}">quit</a>
 </body>
 </html>

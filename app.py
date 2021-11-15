@@ -1,4 +1,4 @@
-from flask import Flask, url_for, render_template, redirect
+from flask import Flask, url_for, render_template, redirect, request, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, logout_user
 from flask_login import current_user, login_user
@@ -7,6 +7,12 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
+import tensorflow as tf
+import numpy as np
+import base64
+from io import BytesIO
+from PIL import Image
+import matplotlib.pyplot as plt
 
 # Flask app
 app = Flask(__name__)
@@ -22,6 +28,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+# VAE decoder
+VAE_decoder = tf.keras.models.load_model('decoder.h5')
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -129,10 +137,23 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/mnistVAE')
-@login_required
+@app.route('/mnistVAE', methods=['GET'])
 def mnist_vae():
-    return render_template('mnist_vae.html')
+    buffered = BytesIO()
+    x = request.args.get('x')
+    y = request.args.get('y')
+    if x and y:
+        data = np.array([[16*(float(x) / 800) - 7,
+                          -9.8*(float(y) / 800) + 4.4]])
+        img_data = VAE_decoder.predict(data)
+        img_data = img_data[0, :, :, 0]
+        img_data = Image.fromarray(np.uint8(img_data * 255), 'L')
+        img_data.save(buffered, format="png")
+        img_str = base64.b64encode(buffered.getvalue())
+        img_str = str(img_str)[2:-1]
+        return render_template('mnist_vae.html', vae_img=img_str)
+
+    return render_template('mnist_vae.html', vae_img='None')
 
 
 if __name__ == 'main':
