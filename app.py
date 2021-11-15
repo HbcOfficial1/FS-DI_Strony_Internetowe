@@ -79,7 +79,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Login")
 
 
-# Routes and redicrects
+# Routes and redirects
 @app.route('/')
 def index():
     return render_template('index.html')
