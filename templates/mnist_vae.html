@@ -16,12 +16,12 @@
     });
     </script>
 
-    <img src="static/imgs/vae.png" height="800" width="800" alt="VAE" ismap>
+    <img src="static/imgs/VAE_map.png" alt="VAE" ismap>
     <br/>
     {% if vae_img != 'None' %}
     <img src="data:image/png;base64,{{ vae_img }}" height="80" width="80">
     {% endif %}
     <br/>
-    <a href="{{ url_for('dashboard') }}">quit</a>
+    <a href="{{ url_for('index') }}">quit</a>
 </body>
 </html>

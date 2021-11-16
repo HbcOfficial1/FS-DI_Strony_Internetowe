@@ -143,8 +143,8 @@ def mnist_vae():
     x = request.args.get('x')
     y = request.args.get('y')
     if x and y:
-        data = np.array([[16*(float(x) / 800) - 7,
-                          -9.8*(float(y) / 800) + 4.4]])
+        data = np.array([[16 * (float(x) / 1024) - 7,
+                          -9.8 * (float(y) / 663) + 4.4]])
         img_data = VAE_decoder.predict(data)
         img_data = img_data[0, :, :, 0]
         img_data = Image.fromarray(np.uint8(img_data * 255), 'L')
