@@ -1,17 +1,20 @@
-from flask import Flask, url_for, render_template, redirect, request, send_file
+from flask import Flask, url_for, render_template, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, logout_user
 from flask_login import current_user, login_user
 import datetime
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, FileField
+from wtforms.validators import InputRequired, Length, ValidationError, regexp
 from flask_bcrypt import Bcrypt
 import tensorflow as tf
 import numpy as np
-import base64
-from io import BytesIO
 from PIL import Image
+from lib.pictures_management import image_to_base64
+from lib.user_management import get_current_user_name
+from werkzeug.datastructures import MultiDict
+from flask_wtf.csrf import CSRFProtect
+
 
 # Flask app
 app = Flask(__name__)
@@ -19,6 +22,7 @@ app = Flask(__name__)
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users_data.db'
 app.config['SECRET_KEY'] = 'projektstronyinternetowe'
+app.config['UPLOAD_FOLDER'] = 'uploads'
 db = SQLAlchemy(app)
 
 # Login manager
@@ -29,6 +33,9 @@ login_manager.login_view = "login"
 
 # VAE decoder
 VAE_decoder = tf.keras.models.load_model('decoder.h5')
+
+#CSRF Protection
+csrf = CSRFProtect(app)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -41,6 +48,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(20), nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.now)
+    # avatar_base64 = db.Column(db.String(20000), nullable=True)
 
     projects = db.relationship('Project', backref='owner')
 
@@ -86,6 +94,27 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Login")
 
 
+class SettingsForm(FlaskForm):
+    username = StringField(validators={InputRequired(), Length(min=4, max=20)},
+                           render_kw={"placeholder": "Username"})
+
+    avatar = FileField(render_kw={"placeholder": "Avatar"})
+
+    # [regexp('/([^/]+\.(?:jpg|jpeg|png))')]
+
+    submit = SubmitField("Save changes")
+    """
+    def validate_username_change(self, username):
+        if username == get_current_user_name(User):
+            raise ValidationError("Podano tą samą nazwę użytkownika")
+        else:
+            existing_user_username = User.query.filter_by(
+                username=username.data).first()
+            if existing_user_username:
+                raise ValidationError("Taki użytkownik już istnieje. " +
+                                      "Podaj inną nazwę.")
+    """
+
 # Routes and redicrects
 @app.route('/')
 def index():
@@ -126,7 +155,8 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+
+    return render_template('dashboard.html', name=get_current_user_name(User))
 
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -138,7 +168,6 @@ def logout():
 
 @app.route('/mnistVAE', methods=['GET'])
 def mnist_vae():
-    buffered = BytesIO()
     x = request.args.get('x')
     y = request.args.get('y')
     if x and y:
@@ -147,12 +176,34 @@ def mnist_vae():
         img_data = VAE_decoder.predict(data)
         img_data = img_data[0, :, :, 0]
         img_data = Image.fromarray(np.uint8(img_data * 255), 'L')
-        img_data.save(buffered, format="png")
-        img_str = base64.b64encode(buffered.getvalue())
-        img_str = str(img_str)[2:-1]
+        img_str = image_to_base64(img_data)
         return render_template('mnist_vae.html', vae_img=img_str)
 
     return render_template('mnist_vae.html', vae_img='None')
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings():
+
+    form = SettingsForm(
+        formdata=MultiDict({'username': get_current_user_name(User)}))
+
+    if form.validate_on_submit():
+        image = Image.open(request.files['avatar'].stream)
+        image_str = image_to_base64(image, resize_size=(80, 80))
+        # todo
+        return render_template('test_template.html', image=image_str)
+    else:
+        print(form.errors)
+
+    return render_template('settings.html', form=form)
+
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def test():
+    x = request.args.get('x')
+    return render_template('test_template.html', image=x)
 
 
 if __name__ == 'main':

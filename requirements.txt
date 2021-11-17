@@ -9,3 +9,5 @@ flask_wtf==1.0.0
 wtforms==3.0.0
 flask_bcrypt==0.7.1
 pillow==8.4.0
+werkzeug==2.0.2
+typing==3.7.4.3

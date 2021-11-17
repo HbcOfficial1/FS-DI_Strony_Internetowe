@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings</title>
+</head>
+<body>
+    <h4>Settings page</h4>
+
+    <form method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        {{ form.avatar }}<br/><br/>
+        {{ form.username }}<br/><br/>
+        {{ form.submit }}
+    </form>
+    <br/>
+    <a href="{{ url_for('dashboard') }}">quit</a>
+
+</body>
+</html>
