@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <title>Rejestracja</title>
 </head>
 <body>
-    <h4>Register page</h4>
+    <h4>Strona rejestracji</h4>
     <form method="POST" action="">
         {{ form.hidden_tag() }}
-        {{ form.username }}
-        {{ form.password }}
+        {{ form.username }}<br/>
+        {{ form.password }}<br/>
         {{ form.submit }}
     </form>
+    <br/>
+    <a href="{{ url_for('index') }}">Wyjście</a>
 </body>
 </html>
