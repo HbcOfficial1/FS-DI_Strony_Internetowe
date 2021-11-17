@@ -9,9 +9,10 @@ from wtforms.validators import InputRequired, Length, ValidationError, regexp
 from flask_bcrypt import Bcrypt
 import tensorflow as tf
 import numpy as np
+import os
 from PIL import Image
 from lib.pictures_management import image_to_base64
-from lib.user_management import get_current_user_name
+from lib.user_management import get_current_user_name, get_current_user_avatar
 from werkzeug.datastructures import MultiDict
 from flask_wtf.csrf import CSRFProtect
 
@@ -30,6 +31,8 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+deafult_image_path = os.path.join('static', 'imgs', 'default_avatar.png')
+deafult_image_base64 = image_to_base64(Image.open(deafult_image_path))
 
 # VAE decoder
 VAE_decoder = tf.keras.models.load_model('decoder.h5')
@@ -48,7 +51,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(20), nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.now)
-    # avatar_base64 = db.Column(db.String(20000), nullable=True)
+    avatar_base64 = db.Column(db.String(20000), nullable=True)
 
     projects = db.relationship('Project', backref='owner')
 
@@ -63,6 +66,7 @@ class Project(db.Model):
 
     def __repr__(self):
         return f'<Project {self.name}>'
+
 
 # Forms
 class RegisterForm(FlaskForm):
@@ -156,7 +160,9 @@ def login():
 @login_required
 def dashboard():
 
-    return render_template('dashboard.html', name=get_current_user_name(User))
+    return render_template('dashboard.html', name=get_current_user_name(User),
+                           avatar=get_current_user_avatar(User,
+                                                          deafult_image_base64))
 
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -198,6 +204,7 @@ def settings():
         print(form.errors)
 
     return render_template('settings.html', form=form)
+
 
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
