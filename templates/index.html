@@ -2,13 +2,18 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Witamy na pokładzie</title>
+    <title>FS-DI AI</title>
 </head>
 <body>
-    <h4>Hello fucking world!</h4>
-    <a href="{{ url_for('login') }}">login</a><br />
-    <a href="{{ url_for('register') }}">register</a><br />
-    <a href="{{ url_for('info') }}">info</a><br />
-    <a href="{{ url_for('mnist_vae') }}">VAE</a><br />
+    <h4>Witaj na stronie!</h4>
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}">Profil</a><br />
+    {% else %}
+        <a href="{{ url_for('login') }}">Logowanie</a><br />
+        <a href="{{ url_for('register') }}">Rejestracja</a><br />
+    {% endif %}
+
+    <a href="{{ url_for('info') }}">Informacje</a><br />
+    <a href="{{ url_for('mnist_vae') }}">Wariancyjny autoencoder</a><br />
 </body>
 </html>
