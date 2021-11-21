@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Ustawienia</title>
+</head>
+<body>
+    <h4>Ustawienia</h4>
+
+    <form method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <p>Zmiana zdjęcia profilowego:</p>
+        {{ form.avatar }}<br/><br/>
+        <p>Zmiana nazwy użytkownika:</p>
+        {{ form.username }}<br/><br/>
+        <p>Zmiana hasła:</p>
+        {{ form.cur_password }}<br/>
+        {{ form.new_password }} <br/>
+        {{ form.new_password_again }}<br/><br/>
+        <p>Zatwierdź zmiany:</p>
+        {{ form.submit }}
+    </form>
+    <br/>
+    <a href="{{ url_for('dashboard') }}">Wyjście</a>
+
+</body>
+</html>

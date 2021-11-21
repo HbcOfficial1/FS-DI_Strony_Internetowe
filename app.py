@@ -1,12 +1,23 @@
-from flask import Flask, url_for, render_template, redirect
+from flask import Flask, url_for, render_template, redirect, request, flash
+from flask import session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, logout_user
 from flask_login import current_user, login_user
 import datetime
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, FileField
+from wtforms.validators import InputRequired, Length, ValidationError, regexp
 from flask_bcrypt import Bcrypt
+import tensorflow as tf
+import numpy as np
+import os
+from PIL import Image
+from lib.pictures_management import image_to_base64
+from lib.user_management import get_current_user_name, get_current_user_avatar
+from werkzeug.datastructures import MultiDict
+from flask_wtf.csrf import CSRFProtect
+import json
+
 
 # Flask app
 app = Flask(__name__)
@@ -14,6 +25,7 @@ app = Flask(__name__)
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users_data.db'
 app.config['SECRET_KEY'] = 'projektstronyinternetowe'
+app.config['UPLOAD_FOLDER'] = 'uploads'
 db = SQLAlchemy(app)
 
 # Login manager
@@ -21,7 +33,14 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+deafult_image_path = os.path.join('static', 'imgs', 'default_avatar.png')
+deafult_image_base64 = image_to_base64(Image.open(deafult_image_path))
 
+# VAE decoder
+VAE_decoder = tf.keras.models.load_model('decoder.h5')
+
+#CSRF Protection
+csrf = CSRFProtect(app)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -34,6 +53,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(20), nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.now)
+    avatar_base64 = db.Column(db.String(20000), nullable=True)
 
     projects = db.relationship('Project', backref='owner')
 
@@ -49,16 +69,17 @@ class Project(db.Model):
     def __repr__(self):
         return f'<Project {self.name}>'
 
+
 # Forms
 class RegisterForm(FlaskForm):
     username = StringField(validators={InputRequired(), Length(min=4, max=20)},
-                           render_kw={"placeholder": "Username"})
+                           render_kw={"placeholder": "Nazwa użytkownika"})
 
     password = PasswordField(validators={InputRequired(),
                              Length(min=4, max=20)},
-                             render_kw={"placeholder": "Password"})
+                             render_kw={"placeholder": "Hasło"})
 
-    submit = SubmitField("Register")
+    submit = SubmitField("Zarejestruj")
 
     def validate_username(self, username):
         existing_user_username = User.query.filter_by(
@@ -70,13 +91,54 @@ class RegisterForm(FlaskForm):
 
 class LoginForm(FlaskForm):
     username = StringField(validators={InputRequired(), Length(min=4, max=20)},
-                           render_kw={"placeholder": "Username"})
+                           render_kw={"placeholder": "Nazwa użytkownika"})
 
     password = PasswordField(validators={InputRequired(),
                              Length(min=4, max=20)},
-                             render_kw={"placeholder": "Password"})
+                             render_kw={"placeholder": "Hasło"})
 
-    submit = SubmitField("Login")
+    submit = SubmitField("Zaloguj")
+
+
+class SettingsForm(FlaskForm):
+    username = StringField(validators={InputRequired(), Length(min=4, max=20)},
+                           render_kw={"placeholder": "Nazwa użytkownika"})
+
+    # todo add regex validator for image files
+    avatar = FileField(render_kw={"placeholder": "Avatar"})
+
+    cur_password = PasswordField(validators={Length(max=20)},
+                             render_kw={"placeholder": "Hasło"})
+
+    new_password = PasswordField(validators={Length(max=20)},
+                             render_kw={"placeholder": "Nowe hasło"})
+
+    new_password_again = PasswordField(validators={Length(max=20)},
+                             render_kw={"placeholder": "Powtórz hasło"})
+
+
+    submit = SubmitField("Zapisz zmiany")
+
+    def validate_username_change(self, username):
+        existing_user_username = User.query.filter_by(
+            username=username.data).first()
+        if existing_user_username:
+            raise ValidationError("Taki użytkownik już istnieje. " +
+                                  "Podaj inną nazwę.")
+
+    def validate_new_password(self, new_password):
+        if new_password.data != '' and new_password.data is not None:
+            if len(new_password.data) < 4:
+                raise ValidationError("Nowe hasło powinno mieć ponad 4 znaki")
+            if new_password.data != self.new_password_again.data:
+                raise ValidationError("Podane hasła nie są zgodne z sobą.")
+
+    def validate_cur_password(self, cur_password):
+        if cur_password.data != '' and cur_password.data is not None:
+            user = User.query.filter_by(
+                username=get_current_user_name(User)).first()
+            if not bcrypt.check_password_hash(user.password, cur_password.data):
+                raise ValidationError("Podano błędne hasło do konta")
 
 
 # Routes and redirects
@@ -112,6 +174,7 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
+                flash('Pomyślnie zalogowano!', category='login')
                 return redirect(url_for('dashboard'))
     return render_template('login.html', form=form)
 
@@ -119,7 +182,10 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+
+    return render_template('dashboard.html', name=get_current_user_name(User),
+                           avatar=get_current_user_avatar(User,
+                                                          deafult_image_base64))
 
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -129,10 +195,54 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/mnistVAE')
-@login_required
+@app.route('/mnistVAE', methods=['GET'])
 def mnist_vae():
-    return render_template('mnist_vae.html')
+    x = request.args.get('x')
+    y = request.args.get('y')
+    if x and y:
+        data = np.array([[16 * (float(x) / 1024) - 7,
+                          -9.8 * (float(y) / 663) + 4.4]])
+        img_data = VAE_decoder.predict(data)
+        img_data = img_data[0, :, :, 0]
+        img_data = Image.fromarray(np.uint8(img_data * 255), 'L')
+        img_str = image_to_base64(img_data)
+        return render_template('mnist_vae.html', vae_img=img_str)
+
+    return render_template('mnist_vae.html', vae_img='None')
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings():
+
+    form = SettingsForm(username=get_current_user_name(User))
+
+    if form.validate_on_submit():
+
+        changes = False
+
+        user = User.query.filter_by(username=get_current_user_name(
+            User)).first()
+
+        if request.files['avatar']:
+            image = Image.open(request.files['avatar'].stream)
+            image_str = image_to_base64(image, resize_size=(80, 80))
+            user.avatar_base64 = image_str
+            changes = True
+
+        if form.username.data != get_current_user_name(User):
+            user.username = form.username.data
+            changes = True
+
+        if form.new_password.data and form.new_password_again.data:
+            user.password = bcrypt.generate_password_hash(form.new_password.data)
+            changes = True
+
+        if changes:
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+
+    return render_template('settings.html', form=form)
 
 
 if __name__ == 'main':
