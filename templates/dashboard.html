@@ -3,9 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Profil</title>
+    <link rel="stylesheet" href="static/styles/main_style.css">
 </head>
 <body>
-    <h4>Witaj {{ name }}!</h4>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+    window.setTimeout(function() {
+        $(".alert").fadeTo(1000, 0).slideUp(1000, function(){
+            $(this).remove();
+        });
+    }, 1500);
+    });
+    </script>
+
+    <div class="alert">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'login' %}
+                    <ul class="{{ category }}">
+                        <li class="{{ category }}">{{ message }}</li>
+                    </ul>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+
     <p>Twoje zdjęcie profilowe:</p>
     <img src="data:image/png;base64,{{ avatar }}"><br/><br/>
     <a href="{{ url_for('settings') }}">Ustawienia</a><br/>
