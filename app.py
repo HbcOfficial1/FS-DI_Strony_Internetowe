@@ -119,17 +119,18 @@ class SettingsForm(FlaskForm):
 
     submit = SubmitField("Zapisz zmiany")
 
-    def validate_username_change(self, username):
+    def validate_username(self, username):
         existing_user_username = User.query.filter_by(
             username=username.data).first()
-        if existing_user_username:
-            raise ValidationError("Taki użytkownik już istnieje. " +
-                                  "Podaj inną nazwę.")
+        if existing_user_username and existing_user_username.username != \
+                get_current_user_name(User):
+            raise ValidationError("Taki użytkownik już istnieje. Podaj inną " +
+                                  "nazwę.")
 
     def validate_new_password(self, new_password):
         if new_password.data != '' and new_password.data is not None:
             if len(new_password.data) < 4:
-                raise ValidationError("Nowe hasło powinno mieć ponad 4 znaki")
+                raise ValidationError("Nowe hasło powinno mieć ponad 4 znaki.")
             if new_password.data != self.new_password_again.data:
                 raise ValidationError("Podane hasła nie są zgodne z sobą.")
 
@@ -138,7 +139,7 @@ class SettingsForm(FlaskForm):
             user = User.query.filter_by(
                 username=get_current_user_name(User)).first()
             if not bcrypt.check_password_hash(user.password, cur_password.data):
-                raise ValidationError("Podano błędne hasło do konta")
+                raise ValidationError("Podano błędne hasło do konta.")
 
 
 # Routes and redicrects
@@ -158,10 +159,16 @@ def register():
 
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(username=form.username.data, password=hashed_password)
+        new_user = User(username=form.username.data,
+                        password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
+        flash('Konto zostało utworzone', category='accept')
         return redirect(url_for('login'))
+
+    else:
+        for error in form.errors.values():
+            flash(error[0], category='deny')
 
     return render_template('register.html', form=form)
 
@@ -174,8 +181,10 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                flash('Pomyślnie zalogowano!', category='login')
+                flash('Pomyślnie zalogowano!', category='accept')
                 return redirect(url_for('dashboard'))
+        flash('Nieprawidłowa nazwa użytkownika lub hasło.', category='deny')
+
     return render_template('login.html', form=form)
 
 
@@ -240,7 +249,14 @@ def settings():
 
         if changes:
             db.session.commit()
+            flash('Zmiany zostały zaakceptowane.', category='accept')
             return redirect(url_for('dashboard'))
+
+    else:
+        for error in form.errors.values():
+            flash(error[0], category='deny')
+
+
 
     return render_template('settings.html', form=form)
 
