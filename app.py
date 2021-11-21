@@ -141,7 +141,7 @@ class SettingsForm(FlaskForm):
                 raise ValidationError("Podano błędne hasło do konta")
 
 
-# Routes and redicrects
+# Routes and redirects
 @app.route('/')
 def index():
     return render_template('index.html')
