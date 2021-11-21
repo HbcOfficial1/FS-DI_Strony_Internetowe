@@ -1,4 +1,5 @@
-from flask import Flask, url_for, render_template, redirect, request
+from flask import Flask, url_for, render_template, redirect, request, flash
+from flask import session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, logout_user
 from flask_login import current_user, login_user
@@ -15,6 +16,7 @@ from lib.pictures_management import image_to_base64
 from lib.user_management import get_current_user_name, get_current_user_avatar
 from werkzeug.datastructures import MultiDict
 from flask_wtf.csrf import CSRFProtect
+import json
 
 
 # Flask app
@@ -172,6 +174,7 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
+                flash('Pomyślnie zalogowano!', category='login')
                 return redirect(url_for('dashboard'))
     return render_template('login.html', form=form)
 
