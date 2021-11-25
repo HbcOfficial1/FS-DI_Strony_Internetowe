@@ -14,10 +14,10 @@ import os
 from PIL import Image
 from lib.pictures_management import image_to_base64
 from lib.user_management import get_current_user_name, get_current_user_avatar
+from lib.DeepDreamModel import run_deepdream
 from werkzeug.datastructures import MultiDict
 from flask_wtf.csrf import CSRFProtect
 import json
-
 
 # Flask app
 app = Flask(__name__)
@@ -37,7 +37,7 @@ deafult_image_path = os.path.join('static', 'imgs', 'default_avatar.png')
 deafult_image_base64 = image_to_base64(Image.open(deafult_image_path))
 
 # VAE decoder
-VAE_decoder = tf.keras.models.load_model('decoder.h5')
+VAE_decoder = tf.keras.models.load_model(os.path.join('models', 'decoder.h5'))
 
 #CSRF Protection
 csrf = CSRFProtect(app)

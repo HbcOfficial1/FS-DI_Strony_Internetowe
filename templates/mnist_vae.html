@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <title>VAE</title>
-</head>
-<body>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+{% extends "layout.html" %}
+{% block title %}Logowanie{% endblock %}
+{% block content %}
+
     <script>
     $(document).ready(function() {
     $("img").on("click", function(event) {
@@ -18,12 +14,14 @@
 
     <img src="static/imgs/VAE_map.png" alt="VAE" ismap>
     <br/>
+
     {% if vae_img != 'None' %}
         <img src="data:image/png;base64,{{ vae_img }}" height="80" width="80">
     {% else %}
         <p>Kliknij dowolny punkt na wykresia aby wygenerować cyfrę.</p>
     {% endif %}
     <br/>
+
     <a href="{{ url_for('index') }}">Wyjście</a>
-</body>
-</html>
+
+{% endblock %}

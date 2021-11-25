@@ -1,38 +1,14 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <title>Info</title>
-    <link rel="stylesheet" href="static/styles/main_style.css">
-</head>
-<body>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script type="text/javascript">
-    $(document).ready(function () {
-        window.setTimeout(function() {
-            $(".alert").fadeTo(1000, 0).slideUp(1000, function(){
-                $(this).remove();
-            });
-        }, 1500);
-    });
-    </script>
+{% extends "layout.html" %}
+{% block title %}Logowanie{% endblock %}
+{% block content %}
 
-    <div class="alert">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <ul class="{{ category }}">
-                    <li class="{{ category }}">{{ message }}</li>
-                </ul>
-            {% endfor %}
-        {% endif %}
-      {% endwith %}
-    </div>
     <h4>Autorzy strony</h4>
+
     <ul>
     <li>Hubert Mazur</li>
     <li>Martyna Malinowska</li>
     </ul>
+
     <a href="{{ url_for('index') }}">Wyjście</a>
-</body>
-</html>
+
+{% endblock %}
