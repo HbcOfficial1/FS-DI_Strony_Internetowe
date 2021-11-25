@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
-{% block title %}Logowanie{% endblock %}
+{% block title %}Projekty{% endblock %}
 {% block content %}
     <h4>Twoje projekty</h4>
 
+    <button onclick="location.href = '{{ url_for('newproject') }}';" id="new_project_button" >Nowy projekt</button>
+    <br /><br />
+
     <a href="{{ url_for('dashboard') }}">Wyjście</a>
+
 {% endblock %}

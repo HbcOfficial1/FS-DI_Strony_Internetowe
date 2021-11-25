@@ -6,7 +6,9 @@ from flask_login import current_user, login_user
 import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, FileField
+from wtforms import FloatField, IntegerRangeField, IntegerField
 from wtforms.validators import InputRequired, Length, ValidationError, regexp
+from wtforms.validators import NumberRange
 from flask_bcrypt import Bcrypt
 import tensorflow as tf
 import numpy as np
@@ -18,6 +20,7 @@ from lib.DeepDreamModel import run_deepdream
 from werkzeug.datastructures import MultiDict
 from flask_wtf.csrf import CSRFProtect
 import json
+import matplotlib.pyplot as plt
 
 # Flask app
 app = Flask(__name__)
@@ -142,6 +145,28 @@ class SettingsForm(FlaskForm):
                 raise ValidationError("Podano błędne hasło do konta.")
 
 
+class ProjectForm(FlaskForm):
+
+    # todo add regex validator for image files
+    input_img = FileField(render_kw={"placeholder": "input_img"})
+
+    octave = FloatField(validators={InputRequired(),
+                                    NumberRange(min=1.2, max=3)})
+
+    octaves_minus = IntegerRangeField(validators={InputRequired(),
+                                            NumberRange(min=-3, max=0)})
+
+    octaves_plus = IntegerRangeField(validators={InputRequired(),
+                                            NumberRange(min=0, max=3)})
+
+
+    steps = IntegerField(validators={InputRequired(),
+                                     NumberRange(min=1, max=200)})
+
+    submit = SubmitField("Dodaj projekt")
+
+
+
 # Routes and redicrects
 @app.route('/')
 def index():
@@ -191,7 +216,6 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-
     return render_template('dashboard.html', name=get_current_user_name(User),
                            avatar=get_current_user_avatar(User,
                                                           deafult_image_base64))
@@ -256,9 +280,38 @@ def settings():
         for error in form.errors.values():
             flash(error[0], category='deny')
 
-
-
     return render_template('settings.html', form=form)
+
+
+@app.route('/projects', methods=['GET', 'POST'])
+@login_required
+def projects():
+    return render_template('projects.html')
+
+@app.route('/newproject', methods=['GET', 'POST'])
+@login_required
+def newproject():
+
+    form = ProjectForm(octave=1.3, steps=50, octaves_minus=-2, octaves_plus=2)
+
+    if form.validate_on_submit():
+
+        img_input = Image.open(request.files['input_img'].stream)
+        ocataves_range = range(form.octaves_minus.data,
+                               form.octaves_plus.data + 1)
+        octave_scale = form.octave.data
+        epochs_per_octave = form.steps.data
+        image = run_deepdream(img_input, octaves=ocataves_range,
+                              octave_scale=octave_scale,
+                              steps_per_octave=epochs_per_octave)
+        image.save('output.jpg', 'JPEG')
+        plt.imshow(image)
+        plt.show()
+
+    else:
+        print(form.errors)
+
+    return render_template('newproject.html', form=form)
 
 
 if __name__ == 'main':
