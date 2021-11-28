@@ -82,7 +82,7 @@ def run_deepdream(img, steps_per_octave=100, step_size=0.02,
     epsilon = tf.constant(1e-8)
 
     base_shape = tf.shape(img)
-    img = tf.keras.preprocessing.image.img_to_array(img)
+    img = tf.keras.preprocessing.image.img_to_array(img)[:, :, :3]  # drop alpha
     img = tf.keras.applications.inception_v3.preprocess_input(img)
 
     initial_shape = img.shape[:-1]

@@ -6,6 +6,17 @@
     <button onclick="location.href = '{{ url_for('newproject') }}';" id="new_project_button" >Nowy projekt</button>
     <br /><br />
 
+    {% if user_projects %}
+        <ul>
+        {% for project in user_projects %}
+            <li><a href="{{ url_for('project', id=project.id) }}">{{project.name}}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak projektów</p>
+    {% endif %}
+
+    <br/>
     <a href="{{ url_for('dashboard') }}">Wyjście</a>
 
 {% endblock %}
