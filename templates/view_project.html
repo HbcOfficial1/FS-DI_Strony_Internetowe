@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block title %}Projekty{% endblock %}
+{% block content %}
+    <img src="data:image/png;base64,{{ project.output_img }}">
+    <br/><br/>
+
+    <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    {{ form.submit }}
+    </form>
+
+    <a href="{{ url_for('projects') }}">Wyjście</a>
+{% endblock %}

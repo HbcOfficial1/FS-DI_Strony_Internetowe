@@ -1,4 +1,4 @@
-ul.login li.login {
+ul.accept li.accept {
     background-image: url(/static/imgs/confirm_icon.png);
     background-repeat: no-repeat;
     padding-left: 30px;
@@ -6,10 +6,23 @@ ul.login li.login {
     padding-bottom: 2px;
     color: green;
     border: 1px solid green;
-    color: green;
     display:inline-block;
     overflow: hidden;
     background-color: #90DF90;
     list-style: none;
 }
 
+
+ul.deny li.deny {
+    background-image: url(/static/imgs/x_icon.png);
+    background-repeat: no-repeat;
+    padding-left: 30px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    color: black;
+    border: 1px solid red;
+    display:inline-block;
+    overflow: hidden;
+    background-color: #F78484;
+    list-style: none;
+}

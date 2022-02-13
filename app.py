@@ -6,7 +6,9 @@ from flask_login import current_user, login_user
 import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, FileField
+from wtforms import FloatField, IntegerRangeField, IntegerField, HiddenField
 from wtforms.validators import InputRequired, Length, ValidationError, regexp
+from wtforms.validators import NumberRange
 from flask_bcrypt import Bcrypt
 import tensorflow as tf
 import numpy as np
@@ -14,10 +16,11 @@ import os
 from PIL import Image
 from lib.pictures_management import image_to_base64
 from lib.user_management import get_current_user_name, get_current_user_avatar
+from lib.DeepDreamModel import run_deepdream
 from werkzeug.datastructures import MultiDict
 from flask_wtf.csrf import CSRFProtect
 import json
-
+import matplotlib.pyplot as plt
 
 # Flask app
 app = Flask(__name__)
@@ -37,7 +40,7 @@ deafult_image_path = os.path.join('static', 'imgs', 'default_avatar.png')
 deafult_image_base64 = image_to_base64(Image.open(deafult_image_path))
 
 # VAE decoder
-VAE_decoder = tf.keras.models.load_model('decoder.h5')
+VAE_decoder = tf.keras.models.load_model(os.path.join('models', 'decoder.h5'))
 
 #CSRF Protection
 csrf = CSRFProtect(app)
@@ -53,7 +56,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(20), nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.now)
-    avatar_base64 = db.Column(db.String(20000), nullable=True)
+    avatar_base64 = db.Column(db.Text(), nullable=True)
 
     projects = db.relationship('Project', backref='owner')
 
@@ -64,7 +67,15 @@ class User(db.Model, UserMixin):
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    input_img = db.Column(db.Text(), nullable=True)
+    output_img = db.Column(db.Text(), nullable=True)
+    octave = db.Column(db.Float(precision=2), nullable=True)
+    octaves_minus = db.Column(db.Integer(), nullable=True)
+    octaves_plus = db.Column(db.Integer(), nullable=True)
+    steps = db.Column(db.Integer(), nullable=True)
+
     owner_id = db.Column(db.ForeignKey('user.id'))
+
 
     def __repr__(self):
         return f'<Project {self.name}>'
@@ -119,17 +130,18 @@ class SettingsForm(FlaskForm):
 
     submit = SubmitField("Zapisz zmiany")
 
-    def validate_username_change(self, username):
+    def validate_username(self, username):
         existing_user_username = User.query.filter_by(
             username=username.data).first()
-        if existing_user_username:
-            raise ValidationError("Taki użytkownik już istnieje. " +
-                                  "Podaj inną nazwę.")
+        if existing_user_username and existing_user_username.username != \
+                get_current_user_name(User):
+            raise ValidationError("Taki użytkownik już istnieje. Podaj inną " +
+                                  "nazwę.")
 
     def validate_new_password(self, new_password):
         if new_password.data != '' and new_password.data is not None:
             if len(new_password.data) < 4:
-                raise ValidationError("Nowe hasło powinno mieć ponad 4 znaki")
+                raise ValidationError("Nowe hasło powinno mieć ponad 4 znaki.")
             if new_password.data != self.new_password_again.data:
                 raise ValidationError("Podane hasła nie są zgodne z sobą.")
 
@@ -138,7 +150,35 @@ class SettingsForm(FlaskForm):
             user = User.query.filter_by(
                 username=get_current_user_name(User)).first()
             if not bcrypt.check_password_hash(user.password, cur_password.data):
-                raise ValidationError("Podano błędne hasło do konta")
+                raise ValidationError("Podano błędne hasło do konta.")
+
+
+class ProjectForm(FlaskForm):
+
+    # todo add regex validator for image files
+    input_img = FileField(render_kw={"placeholder": "input_img"})
+
+    name = StringField(validators={InputRequired(), Length(min=4, max=20)},
+                           render_kw={"placeholder": "Nazwa projektu"})
+
+    octave = FloatField(validators={InputRequired(),
+                                    NumberRange(min=1.2, max=3)})
+
+    octaves_minus = IntegerRangeField(validators={InputRequired(),
+                                            NumberRange(min=-3, max=0)})
+
+    octaves_plus = IntegerRangeField(validators={InputRequired(),
+                                            NumberRange(min=0, max=3)})
+
+
+    steps = IntegerField(validators={InputRequired(),
+                                     NumberRange(min=1, max=200)})
+
+    submit = SubmitField("Dodaj projekt")
+
+
+class DeleteProjectForm(FlaskForm):
+    submit = SubmitField("Usuń projekt")
 
 
 # Routes and redirects
@@ -158,10 +198,16 @@ def register():
 
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(username=form.username.data, password=hashed_password)
+        new_user = User(username=form.username.data,
+                        password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
+        flash('Konto zostało utworzone', category='accept')
         return redirect(url_for('login'))
+
+    else:
+        for error in form.errors.values():
+            flash(error[0], category='deny')
 
     return render_template('register.html', form=form)
 
@@ -174,15 +220,16 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                flash('Pomyślnie zalogowano!', category='login')
+                flash('Pomyślnie zalogowano!', category='accept')
                 return redirect(url_for('dashboard'))
+        flash('Nieprawidłowa nazwa użytkownika lub hasło.', category='deny')
+
     return render_template('login.html', form=form)
 
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-
     return render_template('dashboard.html', name=get_current_user_name(User),
                            avatar=get_current_user_avatar(User,
                                                           deafult_image_base64))
@@ -240,9 +287,89 @@ def settings():
 
         if changes:
             db.session.commit()
+            flash('Zmiany zostały zaakceptowane.', category='accept')
             return redirect(url_for('dashboard'))
 
+    else:
+        for error in form.errors.values():
+            flash(error[0], category='deny')
+
     return render_template('settings.html', form=form)
+
+
+@app.route('/projects', methods=['GET', 'POST'])
+@login_required
+def projects():
+
+    user_projects = Project.query.filter_by(owner_id=current_user.get_id())
+
+    return render_template('projects.html', user_projects=user_projects)
+
+@app.route('/newproject', methods=['GET', 'POST'])
+@login_required
+def newproject():
+
+    form = ProjectForm(octave=1.3, steps=100, octaves_minus=-1, octaves_plus=1)
+
+    if form.validate_on_submit():
+
+        user_id = current_user.get_id()
+
+        img_input = Image.open(request.files['input_img'].stream)
+        project_name = form.name.data
+        ocataves_range = range(form.octaves_minus.data,
+                               form.octaves_plus.data + 1)
+        octave_scale = form.octave.data
+        epochs_per_octave = form.steps.data
+
+        image = run_deepdream(img_input, octaves=ocataves_range,
+                              octave_scale=octave_scale,
+                              steps_per_octave=epochs_per_octave)
+
+        image_output_base64 = image_to_base64(image)
+        image_input_base64 = image_to_base64(img_input)
+
+        project = Project(name=project_name, input_img=image_input_base64,
+                          output_img=image_output_base64, octave=octave_scale,
+                          octaves_minus=form.octaves_minus.data,
+                          octaves_plus=form.octaves_plus.data,
+                          steps=epochs_per_octave, owner_id=user_id)
+
+        db.session.add(project)
+        db.session.commit()
+        flash('Utworzono nowy projekt', category='accept')
+        return redirect(url_for('projects'))
+
+    return render_template('newproject.html', form=form)
+
+
+@app.route('/project', methods=['GET', 'POST'])
+@login_required
+def project():
+
+    project_id = request.args.get('id')
+
+    project = Project.query.filter_by(id=project_id).first()
+
+    if project is not None:
+        if str(project.owner_id) == current_user.get_id():
+
+            delete_button_form = DeleteProjectForm()
+
+            if delete_button_form.validate_on_submit():
+                db.session.delete(project)
+                db.session.commit()
+                flash("Pomyślnie usunięto projekt.", category='accept')
+                return redirect(url_for('projects'))
+
+            return render_template('view_project.html', project=project,
+                                   form=delete_button_form)
+        else:
+            flash('Nie masz dostępu do tego projektu.', category='deny')
+            return redirect(url_for('projects'))
+    else:
+        flash('Projekt nie istnieje.', category='deny')
+        return redirect(url_for('projects'))
 
 
 if __name__ == 'main':

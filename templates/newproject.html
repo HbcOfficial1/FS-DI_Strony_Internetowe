@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block title %}Projekty{% endblock %}
+{% block content %}
+
+
+        <form method="POST" action="" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <p>Dodaj zdjęcie:</p>
+            {{ form.input_img }}
+            <br/>
+
+            <p>Nazwa projektu:</p>
+            {{ form.name }}
+            <br/>
+
+            <p>Octave:</p>
+            {{ form.octave }}
+            <br/>
+
+            <p>Steps:</p>
+            {{ form.steps }}
+            <br/>
+
+            <p>Octaves_minus:</p>
+            {{ form.octaves_minus }}<span id="octaves_minus_value"></span>
+            <br/>
+
+            <p>Octaves_plus:</p>
+            {{ form.octaves_plus }}<span id="octaves_plus_value"></span>
+            <br/>
+
+            <p>Potwierdź:</p>
+            {{ form.submit }}
+            <br/>
+
+        </form>
+
+    <br />
+    <a href="{{ url_for('projects') }}">Porzuć projekt</a>
+
+    <script>
+        var slider_minus = document.getElementById("octaves_minus");
+        var output_minus = document.getElementById("octaves_minus_value");
+        output_minus.innerHTML = slider_minus.value;
+
+        var slider_plus = document.getElementById("octaves_plus");
+        var output_plus = document.getElementById("octaves_plus_value");
+        output_plus.innerHTML = slider_plus.value;
+
+        // Update the current slider value (each time you drag the slider handle)
+        slider_minus.oninput = function() {
+          output_minus.innerHTML = this.value;
+        }
+        slider_plus.oninput = function() {
+          output_plus.innerHTML = this.value;
+        }
+
+    </script>
+
+{% endblock %}

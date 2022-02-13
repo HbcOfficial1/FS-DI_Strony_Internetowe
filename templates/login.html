@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <title>Logowanie</title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block title %}Logowanie{% endblock %}
+{% block content %}
     <h4>Strona logownia</h4>
 
     <form method="POST" action="">
@@ -15,5 +11,4 @@
     </form>
     <br/>
     <a href="{{ url_for('index') }}">Wyjście</a>
-</body>
-</html>
+{% endblock %}

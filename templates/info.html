@@ -1,15 +1,14 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <title>Info</title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block title %}Logowanie{% endblock %}
+{% block content %}
+
     <h4>Autorzy strony</h4>
+
     <ul>
     <li>Hubert Mazur</li>
     <li>Martyna Malinowska</li>
     </ul>
+
     <a href="{{ url_for('index') }}">Wyjście</a>
-</body>
-</html>
+
+{% endblock %}

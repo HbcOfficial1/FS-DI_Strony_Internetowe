@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <title>FS-DI AI</title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block title %}Logowanie{% endblock %}
+{% block content %}
+
     <h4>Witaj na stronie!</h4>
+
     {% if current_user.is_authenticated %}
         <a href="{{ url_for('dashboard') }}">Profil</a><br />
     {% else %}
@@ -15,5 +13,5 @@
 
     <a href="{{ url_for('info') }}">Informacje</a><br />
     <a href="{{ url_for('mnist_vae') }}">Wariancyjny autoencoder</a><br />
-</body>
-</html>
+
+{% endblock %}
