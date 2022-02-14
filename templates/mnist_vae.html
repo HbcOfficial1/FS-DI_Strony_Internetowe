@@ -2,6 +2,9 @@
 {% block title %}Logowanie{% endblock %}
 {% block content %}
 
+
+
+<div id="centering1">
     <script>
     $(document).ready(function() {
     $("img").on("click", function(event) {
@@ -13,15 +16,25 @@
     </script>
 
     <img src="static/imgs/VAE_map.png" alt="VAE" ismap>
+
     <br/>
+    <div id="centering1">
+    Twoja wygenerowana liczba
+        </div>
+    <div id="centering1">
 
     {% if vae_img != 'None' %}
-        <img src="data:image/png;base64,{{ vae_img }}" height="80" width="80">
+        <img src="data:image/png;base64,{{ vae_img }}" height="100" width="100">
     {% else %}
+    </div>
+
         <p>Kliknij dowolny punkt na wykresia aby wygenerować cyfrę.</p>
     {% endif %}
     <br/>
 
+    <div id="centering2">
     <a href="{{ url_for('index') }}">Wyjście</a>
+    </div>
+</div>
 
 {% endblock %}

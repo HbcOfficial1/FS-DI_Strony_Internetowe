@@ -1,6 +1,23 @@
 {% extends "layout.html" %}
 {% block title %}Projekty{% endblock %}
 {% block content %}
+
+<div id="navbar3">
+    <div id="menu1">
+        <div class="option1">
+    <a href="{{ url_for('settings') }}">Ustawienia</a><br/>
+        </div>
+            <div class="option1">
+    <a href="{{ url_for('projects') }}">Projekty</a><br/>
+                </div>
+                    <div class="option1">
+    <a href="{{ url_for('logout') }}">Wyloguj</a><br/>
+                        </div>
+
+        <div style="clear:both;"></div>
+    </div>
+</div>
+<div id="centering1">
     <img src="data:image/png;base64,{{ project.output_img }}">
     <br/><br/>
 
@@ -10,4 +27,5 @@
     </form>
 
     <a href="{{ url_for('projects') }}">Wyjście</a>
+</div>
 {% endblock %}

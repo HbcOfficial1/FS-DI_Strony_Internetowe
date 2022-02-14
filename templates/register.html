@@ -1,7 +1,33 @@
 {% extends "layout.html" %}
 {% block title %}Logowanie{% endblock %}
 {% block content %}
+{% if current_user.is_authenticated %}
 
+
+            {% else %}
+<div id="navbar2">
+     <div id="menu1">
+                       <div class="option1">
+                            <a  href="{{ url_for('login') }}" >Logowanie</a><br />
+                       </div>
+
+                          <div class="option1">
+                            <a  href="{{ url_for('register') }}">Rejestracja</a><br />
+                          </div>
+
+
+              {% endif %}
+
+                <div class="option1">
+                         <a  href="{{ url_for('info') }}">Informacje</a><br />
+                 </div>
+             <div class="option1">
+                        <a href="{{ url_for('mnist_vae') }}">Wariancyjny autoencoder</a><br />
+             </div>
+      <div style="clear:both;"></div>
+   </div>
+</div>
+<div id="centering1">
     <h4>Strona rejestracji</h4>
 
     <form method="POST" action="">
@@ -13,5 +39,6 @@
 
     <br/>
     <a href="{{ url_for('index') }}">Wyjście</a>
+</div>
 
 {% endblock %}

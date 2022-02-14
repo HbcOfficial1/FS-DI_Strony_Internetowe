@@ -21,7 +21,9 @@ from werkzeug.datastructures import MultiDict
 from flask_wtf.csrf import CSRFProtect
 import json
 import matplotlib.pyplot as plt
-
+from dotenv import load_dotenv
+dotenv_path = '.env'  # Path to .env file
+load_dotenv(dotenv_path)
 # Flask app
 app = Flask(__name__)
 
