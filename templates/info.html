@@ -1,14 +1,51 @@
 {% extends "layout.html" %}
 {% block title %}Logowanie{% endblock %}
 {% block content %}
+{% if current_user.is_authenticated %}
 
-    <h4>Autorzy strony</h4>
 
-    <ul>
-    <li>Hubert Mazur</li>
-    <li>Martyna Malinowska</li>
-    </ul>
+            {% else %}
+<div id="navbar2">
+     <div id="menu1">
+                       <div class="option1">
+                            <a  href="{{ url_for('login') }}" >Logowanie</a><br />
+                       </div>
 
+                          <div class="option1">
+                            <a  href="{{ url_for('register') }}">Rejestracja</a><br />
+                          </div>
+
+
+              {% endif %}
+
+                <div class="option1">
+                         <a  href="{{ url_for('info') }}">Informacje</a><br />
+                 </div>
+             <div class="option1">
+                        <a href="{{ url_for('mnist_vae') }}">Wariancyjny autoencoder</a><br />
+             </div>
+      <div style="clear:both;"></div>
+   </div>
+</div>
+
+<div id="centering2">
+    <div id="topbar2">
+            <h4>Autorzy strony</h4>
+        </div>
+<div id="content4">
+
+</div>
+    <div>Hubert Mazur </div>
+    <div>Martyna Malinowska </div>
+<div id="centering2">
     <a href="{{ url_for('index') }}">Wyjście</a>
+    </div>
+    <div id="content5">
+        </div>
+     <div id="footer1">
+			Strona intenetowa autorstwa Huberta Mazura i Martyny Malinowskiej &copy; Wszelkie prawa zastrzeżone
+		</div>
+    </div>
+
 
 {% endblock %}

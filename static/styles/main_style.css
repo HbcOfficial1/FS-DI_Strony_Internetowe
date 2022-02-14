@@ -1,3 +1,9 @@
+body
+{
+	background-color: #404040;
+	font-family: 'Lato', sans-serif;
+}
+
 ul.accept li.accept {
     background-image: url(/static/imgs/confirm_icon.png);
     background-repeat: no-repeat;
@@ -25,4 +31,273 @@ ul.deny li.deny {
     overflow: hidden;
     background-color: #F78484;
     list-style: none;
+}
+
+#navbar1
+{
+	width: 600px;
+	margin-left: auto;
+	margin-right: auto;
+}
+#navbar2
+{
+	width: 700px;
+	margin-left: auto;
+	margin-right: auto;
+}
+#navbar3
+{
+	width: 372px;
+	margin-left: auto;
+	margin-right: auto;
+}
+#menu1
+{
+	background-color: #303030;
+	margin-top: 10px;
+	color: #ffffff;
+	padding: 2px;
+	
+}
+
+.option1
+{
+	float: left;
+	min-width: 20px;
+	height: 70px;
+	font-size: 20px;
+	padding: 20px;
+	border-right: 2px dotted #444444;
+	opacity: 0.9;
+}
+
+#topbar1
+{
+        width: 700px;
+        margin-left: auto;
+	margin-right: auto;
+        text-align: center;
+	background-color: #3E6AC1;
+        letter-spacing: 2px;
+        font-weight: 400;
+	color: white;
+	padding: 40px;
+	margin-top: 15px;
+	margin-bottom: 25px;
+	height: 100px;
+}
+#topbar2
+{
+        width: 700px;
+        margin-left: auto;
+	margin-right: auto;
+        text-align: center;
+	background-color: #3E6AC1;
+        letter-spacing: 2px;
+        
+}
+#sidebar1
+{
+        
+	width: 148px;
+	min-height: 620px;
+	padding:20px;
+	background-color: 
+	text-align: center;
+	font-size: 30px;
+	
+}
+
+#content1
+{
+	
+	width: 700px;
+	margin-left: auto;
+	margin-right: auto;
+        min-height: 800px;
+
+}
+#content2
+{
+	background-color: #404040;
+        text-align: center;
+	width: 700px;
+	margin-left: auto;
+	margin-right: auto;
+        min-height: 900px;
+
+}
+#content3
+{
+	background-color: #404040;
+        text-align: center;
+	width: 700px;
+	margin-left: auto;
+	margin-right: auto;
+        min-height: 230px;
+
+}
+#content4
+{
+	background-color: #404040;
+        text-align: center;
+	width: 700px;
+	margin-left: auto;
+	margin-right: auto;
+        min-height: 110px;
+
+}
+
+#content5
+{
+	background-color: #404040;
+        text-align: center;
+	width: 700px;
+	margin-left: auto;
+	margin-right: auto;
+        min-height: 360px;
+
+}
+.bigtitle1
+{
+	font-size: 20px;
+	font-weight: 100;
+	letter-spacing: 2px;
+        margin-left: auto;
+	margin-right: auto;
+        text-align: center;
+}
+.bigtitle2
+{
+
+	font-size: 32px;
+        margin-left: auto;
+	margin-right: auto;
+	font-weight: 200;
+	letter-spacing: 2px;
+        text-align: center;
+        color: white;
+
+}
+
+.dottedline
+{
+	height: 5px;
+	margin-top: 15px;
+	margin-bottom: 20px;
+	border-bottom: 2px dotted #444444;
+color: white;
+}
+
+#footer1
+{
+ width: 700px;
+        margin-left: auto;
+	margin-right: auto;
+        text-align: center;
+	background-color: #3E6AC1;
+        letter-spacing: 2px;
+        font-weight: 200;
+	color: white;
+	padding: 40px;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	height: 120px;
+}
+#footer2
+{
+ width: 700px;
+        margin-left: auto;
+	margin-right: auto;
+        text-align: center;
+	background-color: #3E6AC1;
+        letter-spacing: 2px;
+        font-weight: 200;
+	color: white;
+	padding: 40px;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	height: 120px;
+}
+#centering1
+{
+        
+        margin-left: auto;
+	margin-right: auto;
+        text-align: center;
+        letter-spacing: 2px;
+        font-weight: 800;
+	color: white;
+        padding: 40px;
+
+}
+#centering2
+{
+        
+        margin-left: auto;
+	margin-right: auto;
+        text-align: center;
+        letter-spacing: 2px;
+        font-weight: 800;
+	color: white;
+        margin-top: 15px;
+	margin-bottom: 5px;
+
+}
+#centering3
+{
+        
+        margin-left: auto;
+	margin-right: auto;
+        text-align: center;
+        letter-spacing: 2px;
+        font-weight: 800;
+	color: white;
+        margin-bottom: 30px;
+
+}
+#centering4
+{
+        
+        margin-left: auto;
+	margin-right: auto;
+        text-align: center;
+        letter-spacing: 2px;
+        font-weight: 800;
+	color: white;
+        margin-top: 10px;
+	margin-bottom: 5px;
+
+}
+
+#topbar1
+{
+        width: 372px;
+        margin-left: auto;
+	margin-right: auto;
+        text-align: center;
+	background-color: #3E6AC1;
+        letter-spacing: 2px;
+        font-weight: 400;
+	color: white;
+	padding: 40px;
+	margin-top: 15px;
+	margin-bottom: 25px;
+	height: 100px;
+}
+
+#topbar2
+{
+        width: 700px;
+        margin-left: auto;
+	margin-right: auto;
+        text-align: center;
+	background-color: #3E6AC1;
+        letter-spacing: 2px;
+        font-weight: 400;
+	color: white;
+	padding: 40px;
+	margin-top: 15px;
+	margin-bottom: 25px;
+	height: 100px;
 }

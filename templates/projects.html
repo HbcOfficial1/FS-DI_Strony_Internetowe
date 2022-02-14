@@ -1,7 +1,27 @@
 {% extends "layout.html" %}
 {% block title %}Projekty{% endblock %}
 {% block content %}
+
+<div id="navbar3">
+    <div id="menu1">
+        <div class="option1">
+    <a href="{{ url_for('settings') }}">Ustawienia</a><br/>
+        </div>
+            <div class="option1">
+    <a href="{{ url_for('projects') }}">Projekty</a><br/>
+                </div>
+                    <div class="option1">
+    <a href="{{ url_for('logout') }}">Wyloguj</a><br/>
+                        </div>
+
+        <div style="clear:both;"></div>
+    </div>
+</div>
+
+<div id="centering2">
+    <div id="topbar1">
     <h4>Twoje projekty</h4>
+        </div>
 
     <button onclick="location.href = '{{ url_for('newproject') }}';" id="new_project_button" >Nowy projekt</button>
     <br /><br />
@@ -9,7 +29,7 @@
     {% if user_projects %}
         <ul>
         {% for project in user_projects %}
-            <li><a href="{{ url_for('project', id=project.id) }}">{{project.name}}</a></li>
+            <div><a href="{{ url_for('project', id=project.id) }}">{{project.name}}</a></div>
         {% endfor %}
         </ul>
     {% else %}
@@ -18,5 +38,6 @@
 
     <br/>
     <a href="{{ url_for('dashboard') }}">Wyjście</a>
+</div>
 
 {% endblock %}

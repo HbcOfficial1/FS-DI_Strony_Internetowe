@@ -2,27 +2,51 @@
 {% block title %}Projekty{% endblock %}
 {% block content %}
 
+<div id="navbar3">
+    <div id="menu1">
+        <div class="option1">
+    <a href="{{ url_for('settings') }}">Ustawienia</a><br/>
+        </div>
+            <div class="option1">
+    <a href="{{ url_for('projects') }}">Projekty</a><br/>
+                </div>
 
+                    <div class="option1">
+    <a href="{{ url_for('logout') }}">Wyloguj</a><br/>
+                        </div>
+        <div style="clear:both;"></div>
+    </div>
+</div>
+<div id="centering2">
+    <div id="topbar1">
+    <h4>Stwórz nowy projekt</h4>
+        </div>
+<div id="centering2">
         <form method="POST" action="" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <p>Dodaj zdjęcie:</p>
+            <div id="centering2">
             {{ form.input_img }}
+                </div>
             <br/>
+
 
             <p>Nazwa projektu:</p>
             {{ form.name }}
             <br/>
-
+        <div id="centering2">
             <p>Octave:</p>
             {{ form.octave }}
+         </div>
             <br/>
 
             <p>Steps:</p>
             {{ form.steps }}
             <br/>
-
+            <div id="centering2">
             <p>Octaves_minus:</p>
             {{ form.octaves_minus }}<span id="octaves_minus_value"></span>
+                </div>
             <br/>
 
             <p>Octaves_plus:</p>
@@ -56,5 +80,6 @@
         }
 
     </script>
+</div>
 
 {% endblock %}

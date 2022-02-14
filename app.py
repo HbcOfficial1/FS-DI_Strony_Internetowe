@@ -1,13 +1,12 @@
 from flask import Flask, url_for, render_template, redirect, request, flash
-from flask import session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, logout_user
 from flask_login import current_user, login_user
 import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, FileField
-from wtforms import FloatField, IntegerRangeField, IntegerField, HiddenField
-from wtforms.validators import InputRequired, Length, ValidationError, regexp
+from wtforms import FloatField, IntegerRangeField, IntegerField
+from wtforms.validators import InputRequired, Length, ValidationError
 from wtforms.validators import NumberRange
 from flask_bcrypt import Bcrypt
 import tensorflow as tf
@@ -17,10 +16,11 @@ from PIL import Image
 from lib.pictures_management import image_to_base64
 from lib.user_management import get_current_user_name, get_current_user_avatar
 from lib.DeepDreamModel import run_deepdream
-from werkzeug.datastructures import MultiDict
 from flask_wtf.csrf import CSRFProtect
-import json
-import matplotlib.pyplot as plt
+
+# from dotenv import load_dotenv
+# dotenv_path = '.env'  # Path to .env file
+# load_dotenv(dotenv_path)
 
 # Flask app
 app = Flask(__name__)
@@ -181,7 +181,7 @@ class DeleteProjectForm(FlaskForm):
     submit = SubmitField("Usuń projekt")
 
 
-# Routes and redicrects
+# Routes and redirects
 @app.route('/')
 def index():
     return render_template('index.html')
