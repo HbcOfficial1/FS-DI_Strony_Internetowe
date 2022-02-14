@@ -15,28 +15,29 @@
     {% block content %}
 
 <div id="navbar2">
-
      <div id="menu1">
          {% if current_user.is_authenticated %}
-          {% else %}
+                    <div class="option1">
+                            <a href="{{ url_for('dashboard') }}">Profil</a><br />
+                    </div>
+
+
+                {% else %}
                        <div class="option1">
                             <a  href="{{ url_for('login') }}" >Logowanie</a><br />
                        </div>
 
-                          <div class="option1">
+                       <div class="option1">
                             <a  href="{{ url_for('register') }}">Rejestracja</a><br />
-                          </div>
+                       </div>
 
-              {% endif %}
-
-                <div class="option1">
-                         <a  href="{{ url_for('info') }}">Informacje</a><br />
-                 </div>
-             <div class="option1">
+                {% endif %}
+                    <div class="option1">
+                        <a  href="{{ url_for('info') }}">Informacje</a><br />
+                    </div>
+                    <div class="option1">
                         <a href="{{ url_for('mnist_vae') }}">Wariancyjny autoencoder</a><br />
-             </div>
-
-
+                    </div>
       <div style="clear:both;"></div>
    </div>
 </div>
@@ -49,13 +50,9 @@
         <span class="bigtitle2">Lorem Ipsum</span>
 
         <div class="dottedline">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla a mollis justo. Vestibulum ligula nisi, convallis id bibendum id, consequat ut elit. Praesent in mauris sed sapien scelerisque viverra. Nam enim libero, fringilla non efficitur et, mollis nec libero. Morbi volutpat elit sed posuere commodo. Donec vel lacinia lacus. Maecenas in lorem ut eros ornare iaculis id nec tellus. Mauris sed eleifend risus, at laoreet ante. Pellentesque id nisi placerat, molestie diam vel, pretium massa. Aenean sodales finibus ligula, vitae auctor diam dignissim eu.
-
             Vivamus maximus arcu ut massa tristique posuere. Quisque cursus odio eu euismod posuere. Aenean mattis tortor ut cursus mollis. Curabitur id ultricies neque. Morbi pellentesque, felis at feugiat maximus, ligula ipsum auctor lorem, quis sodales ipsum dui sit amet diam. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam id mauris sed magna mattis blandit. Morbi in lectus nec elit consequat luctus vitae vel leo. Nam ante risus, consequat a lacus non, placerat pretium magna. Donec lacus elit, convallis eget magna in, posuere eleifend libero. Curabitur egestas nisl quis augue scelerisque, eu fermentum nisi viverra. Mauris ornare tellus est, sed elementum tellus feugiat sit amet. Suspendisse nec imperdiet ex.
-
             Pellentesque tempor sit amet massa vel scelerisque. Vivamus est nibh, scelerisque vel leo id, aliquet ullamcorper arcu. Mauris euismod ipsum a mauris luctus, ut varius ipsum iaculis. Ut at pharetra urna. Vestibulum et nisi mollis, laoreet neque at, elementum libero. Vestibulum auctor eros vitae urna malesuada, vitae auctor massa hendrerit. Sed et nunc efficitur risus bibendum aliquet.
-
             Praesent pharetra, ligula eu luctus fermentum, felis odio hendrerit eros, a mollis leo nunc vel libero. Morbi in facilisis leo. Quisque ultrices urna vel lacus placerat fermentum. In placerat libero eget lacus pharetra pulvinar non vitae nulla. Donec egestas, mi eu sagittis placerat, mauris mauris porta eros, ut eleifend odio erat id nisi. Vivamus non euismod nulla, eget tincidunt neque. Nam tincidunt sodales erat, vitae condimentum erat cursus sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse ut pellentesque nulla. Phasellus mollis lectus vel nisl luctus tempor.
-
             Aliquam maximus volutpat iaculis. Nullam porttitor maximus elit, at porta ex tincidunt id. Etiam sit amet lacus vehicula, posuere ante ac, cursus tortor. Donec lobortis euismod libero. Curabitur id tempus purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Duis efficitur vulputate magna a fringilla. Mauris tincidunt, neque nec finibus condimentum, orci mi viverra ante, quis faucibus nibh ligula non lacus. Suspendisse potenti. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque tellus risus, maximus in risus ut, mattis luctus mi. Proin interdum nisi ultrices, bibendum felis at, interdum massa. Etiam vitae eros ac sem fermentum aliquet non eu odio. Vestibulum ultrices blandit metus, vitae rhoncus augue viverra nec. Nam nec ligula ut nisi ultrices bibendum in et massa.
         </div>
     </div>
