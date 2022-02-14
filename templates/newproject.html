@@ -17,27 +17,36 @@
         <div style="clear:both;"></div>
     </div>
 </div>
-<div id="centering1">
+<div id="centering2">
+    <div id="topbar1">
+    <h4>Stwórz nowy projekt</h4>
+        </div>
+<div id="centering2">
         <form method="POST" action="" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <p>Dodaj zdjęcie:</p>
+            <div id="centering2">
             {{ form.input_img }}
+                </div>
             <br/>
+
 
             <p>Nazwa projektu:</p>
             {{ form.name }}
             <br/>
-
+        <div id="centering2">
             <p>Octave:</p>
             {{ form.octave }}
+         </div>
             <br/>
 
             <p>Steps:</p>
             {{ form.steps }}
             <br/>
-
+            <div id="centering2">
             <p>Octaves_minus:</p>
             {{ form.octaves_minus }}<span id="octaves_minus_value"></span>
+                </div>
             <br/>
 
             <p>Octaves_plus:</p>

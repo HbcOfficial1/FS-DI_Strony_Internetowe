@@ -28,21 +28,40 @@
       <div style="clear:both;"></div>
    </div>
 </div>
-<div id="centering1">
-<h4>Zaloguj się</h4>
 
+
+<div id="centering2">
+        <div id="topbar2">
+            <h4>Panel Logowania</h4>
+        </div>
+<div id="content4">
+
+</div>
+    <div id="centering3">
+        Zaloguj się
+        </div>
     <form method="POST" action="">
 
         {{ form.hidden_tag() }}
 
         {{ form.username() }}<br/>
-
+<div id="centering4">
         {{ form.password }}<br/>
+</div>
+        <div id="centering2">
         {{ form.submit }}
+        </div>
 
     </form>
 
     <br/>
     <a href="{{ url_for('index') }}">Wyjście</a>
+
+    <div id="content3">
+        </div>
+    <div id="footer2">
+			Strona intenetowa autorstwa Huberta Mazura i Martyny Malinowskiej &copy; Wszelkie prawa zastrzeżone
+		</div>
 </div>
+
 {% endblock %}
