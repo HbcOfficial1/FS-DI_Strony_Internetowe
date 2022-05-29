@@ -22,6 +22,9 @@ from flask_wtf.csrf import CSRFProtect
 # dotenv_path = '.env'  # Path to .env file
 # load_dotenv(dotenv_path)
 
+# Define port
+port = int(os.environ.get('PORT', 5000))
+
 # Flask app
 app = Flask(__name__)
 
@@ -373,4 +376,4 @@ def project():
 
 
 if __name__ == 'main':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=port)
